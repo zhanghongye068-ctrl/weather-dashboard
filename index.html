@@ -1619,7 +1619,7 @@
         },
         {name:'含湿量',type:'line',data:humRatios,smooth:true,symbol:'circle',symbolSize:5,showSymbol:true,
           lineStyle:{color:'#4fc3f7',width:2,type:'dashed'},itemStyle:{color:'#4fc3f7',borderColor:'#fff',borderWidth:1},
-          label:{show:true,position:'bottom',color:'#4fc3f7',fontSize:10,fontWeight:600,formatter:function(p){return p.value.toFixed(1);},
+          label:{show:true,position:'bottom',color:'#4fc3f7',fontSize:10,fontWeight:600,formatter:function(p){return p.value.toFixed(1)+' g/kg';},
             distance:6}
         },
         {name:'辐射',type:'line',yAxisIndex:1,data:rads,smooth:true,symbol:'none',
