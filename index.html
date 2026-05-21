@@ -1227,6 +1227,7 @@
   /* ===== QWeather API ===== */
   var QW_KEY = 'feddea05fa374d5485c6934c67108126';
   var QW_BASE = 'https://n763yxqg6d.re.qweatherapi.com/v7';
+  var currentPressure = 1013; // hPa, updated on each data fetch
 
   /* ===== Fetch Weather Data (QWeather + Open-Meteo radiation) ===== */
   function loadWeatherData() {
@@ -1264,6 +1265,7 @@
         dewPoint = Math.round((b * alpha) / (a - alpha) * 10) / 10;
         // Humidity ratio (g/kg) — requires pressure in hPa
         var P_hPa = parseInt(nowData.pressure, 10) || 1013;
+        currentPressure = P_hPa;
         var P_kPa = P_hPa / 10;
         var p_ws = 0.61078 * Math.exp(17.27 * T / (T + 237.3)); // saturation vapor pressure kPa
         var p_w = (RH / 100) * p_ws;
@@ -1547,7 +1549,7 @@
   function renderHourlyChart(hourly) {
     var chart=getChart('hourly','hourlyChart');
     if(!chart)return;
-    var times=[], temps=[], hums=[], rads=[], winds=[];
+    var times=[], temps=[], humRatios=[], rads=[], winds=[];
     var nowStr = toLocalISOStr(new Date());
     var startIdx=0;
     if(hourly&&hourly.time){
@@ -1555,13 +1557,24 @@
         if(hourly.time[i]>=nowStr){startIdx=i;break;}
       }
     }
+    // Helper: calc humidity ratio from T(°C), RH(%), P(hPa)
+    function calcHR(tC, rhPct) {
+      if(tC==null||rhPct==null) return null;
+      var P_kPa = currentPressure / 10;
+      var p_ws = 0.61078 * Math.exp(17.27 * tC / (tC + 237.3));
+      var p_w = (rhPct / 100) * p_ws;
+      var omega = 0.622 * p_w / Math.max(P_kPa - p_w, 0.001); // kg/kg
+      return Math.round(omega * 1000 * 10) / 10; // g/kg
+    }
     var count=Math.min(24, hourly.time?hourly.time.length-startIdx:0);
     for(var j=0;j<count;j++){
       var idx=startIdx+j;
       var t=hourly.time[idx]||'';
       times.push(t.slice(11,16));
-      temps.push(hourly.temperature_2m?Math.round(hourly.temperature_2m[idx]):null);
-      hums.push(hourly.relative_humidity_2m?hourly.relative_humidity_2m[idx]:null);
+      var tC = hourly.temperature_2m ? Math.round(hourly.temperature_2m[idx]) : null;
+      var rh = hourly.relative_humidity_2m ? hourly.relative_humidity_2m[idx] : null;
+      temps.push(tC);
+      humRatios.push(calcHR(tC, rh));
       rads.push(hourly.shortwave_radiation?Math.round(hourly.shortwave_radiation[idx]):null);
       winds.push(hourly.wind_speed_10m?Math.round(hourly.wind_speed_10m[idx]):null);
     }
@@ -1572,13 +1585,13 @@
         formatter:function(p){
           var s='<b>'+p[0].axisValue+'</b>';
           p.forEach(function(item){
-            var unit=item.seriesName==='温度'?'°C':item.seriesName==='湿度'?'%':item.seriesName==='辐射'?'W/m²':'km/h';
+            var unit=item.seriesName==='温度'?'°C':item.seriesName==='含湿量'?'g/kg':item.seriesName==='辐射'?'W/m²':'km/h';
             s+='<br/>'+item.marker+' '+item.seriesName+': '+item.value+unit;
           });
           return s;
         }
       },
-      legend:{data:['温度','湿度','辐射'],top:0,textStyle:{color:'rgba(240,242,255,0.7)',fontSize:11}},
+      legend:{data:['温度','含湿量','辐射'],top:0,textStyle:{color:'rgba(240,242,255,0.7)',fontSize:11}},
       grid:{left:50,right:50,top:36,bottom:30},
       xAxis:{type:'category',data:times,boundaryGap:false,
         axisLine:{lineStyle:{color:'rgba(255,255,255,0.12)'}},
@@ -1586,7 +1599,7 @@
         splitLine:{show:true,lineStyle:{color:'rgba(255,255,255,0.06)',type:'dashed'}}
       },
       yAxis:[
-        {type:'value',name:'°C / %',nameTextStyle:{color:'rgba(255,255,255,0.5)',fontSize:10},
+        {type:'value',name:'°C / g/kg',nameTextStyle:{color:'rgba(255,255,255,0.5)',fontSize:10},
           axisLabel:{color:'rgba(255,255,255,0.5)',fontSize:10},
           splitLine:{lineStyle:{color:'rgba(255,255,255,0.06)',type:'dashed'}},
           axisLine:{show:true,lineStyle:{color:'rgba(255,255,255,0.12)'}}
@@ -1604,9 +1617,9 @@
           label:{show:true,position:'top',color:'#ffab40',fontSize:10,fontWeight:600,formatter:function(p){return p.value+'°';},
             distance:6}
         },
-        {name:'湿度',type:'line',data:hums,smooth:true,symbol:'circle',symbolSize:5,showSymbol:true,
+        {name:'含湿量',type:'line',data:humRatios,smooth:true,symbol:'circle',symbolSize:5,showSymbol:true,
           lineStyle:{color:'#4fc3f7',width:2,type:'dashed'},itemStyle:{color:'#4fc3f7',borderColor:'#fff',borderWidth:1},
-          label:{show:true,position:'bottom',color:'#4fc3f7',fontSize:10,fontWeight:600,formatter:function(p){return p.value+'%';},
+          label:{show:true,position:'bottom',color:'#4fc3f7',fontSize:10,fontWeight:600,formatter:function(p){return p.value.toFixed(1);},
             distance:6}
         },
         {name:'辐射',type:'line',yAxisIndex:1,data:rads,smooth:true,symbol:'none',
