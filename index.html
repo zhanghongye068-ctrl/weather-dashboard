@@ -1369,10 +1369,11 @@
     var loc = currentLocation.lng + ',' + currentLocation.lat;
     var url = QW_BASE + '/warning/now?location=' + loc + '&key=' + QW_KEY + '&lang=zh';
     fetch(url).then(function(r){return r.json()}).then(function(data){
-      if(data.code === '200'){
+      var errCode = data.code || (data.error && data.error.status);
+      if(errCode === '200'){
         var warnings = data.warning || [];
         renderAlerts(warnings);
-      } else if(data.code === '403'){
+      } else if(errCode === '403' || errCode === 403){
         // QWeather subscription lacks warning API permission — show hint
         renderAlerts(null, '预警接口未授权，请在和风天气控制台开启「灾害预警」权限');
       } else {
