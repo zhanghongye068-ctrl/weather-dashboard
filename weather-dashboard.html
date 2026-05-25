@@ -321,23 +321,6 @@
     .forecast-cards__wave path.wave-main { fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
     .forecast-cards__wave path.wave-sub { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 1.5; stroke-linecap: round; }
 
-    /* ===== Province Forecast Section ===== */
-    .province-section { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 8px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; }
-    .province-section__header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .province-section__header-icon { font-size: 16px; }
-    .province-section__header-title { font-size: 12px; font-weight: 700; color: var(--text-primary); }
-    .province-section__header-sub { font-size: 10px; color: var(--text-secondary); }
-    .province-forecast-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-    .province-forecast-row::-webkit-scrollbar { height: 4px; }
-    .province-forecast-row::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .province-fc-card { flex: 0 0 auto; min-width: 56px; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px solid rgba(255,255,255,0.06); }
-    .province-fc-card__date { font-size: 9px; color: var(--text-secondary); white-space: nowrap; }
-    .province-fc-card__icon { font-size: 18px; line-height: 1; margin: 2px 0; filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
-    .province-fc-card__weather { font-size: 9px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52px; }
-    .province-fc-card__temps { font-size: 10px; font-weight: 600; }
-    .province-fc-card__high { color: var(--accent-orange); }
-    .province-fc-card__low { color: var(--accent-blue); margin-left: 3px; }
-
     /* ===== Data Table ===== */
     .data-scroll { max-height: 240px; overflow-y: auto; margin-top: 6px; }
     .data-scroll::-webkit-scrollbar { width: 4px; }
@@ -612,18 +595,6 @@
     <div class="card full-width" style="margin-bottom:6px">
       <div class="card__title"><span class="card__title-icon">📈</span> 未来24小时逐时数据</div>
       <div class="chart-container" id="hourlyChart"></div>
-    </div>
-
-    <!-- Province Overview -->
-    <div class="province-section" id="provinceSection">
-      <div class="province-section__header">
-        <span class="province-section__header-icon">🗺️</span>
-        <span class="province-section__header-title" id="provinceTitle">山东省概况</span>
-        <span class="province-section__header-sub" id="provinceSub">省会济南预报</span>
-      </div>
-      <div class="province-forecast-row" id="provinceFcRow">
-        <div class="province-fc-card"><div class="province-fc-card__date">--</div><div class="province-fc-card__icon">--</div><div class="province-fc-card__weather">加载中</div><div class="province-fc-card__temps">--</div></div>
-      </div>
     </div>
 
     <!-- Bottom Charts -->
@@ -1352,7 +1323,6 @@
     });
 
     loadAlerts();
-    loadProvinceForecast();
   }
 
   function buildMergedHourly(qwHourly, radHourly) {
@@ -1396,19 +1366,20 @@
 
   /* ===== Weather Alerts (QWeather + localStorage 24h cache) ===== */
   var lastAlertCount = -1;
-  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts';
+  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts_v2';
   var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
   function filterAlertsByLocation(alerts) {
-    // Only keep alerts whose senderName (e.g. "四川省气象台") contains the current province name
+    // Only keep alerts relevant to current province
     var prov = currentLocation.province || '';
-    if(!prov) return alerts; // no province info, show all
-    // Exact province match: alert sender contains province name
+    var city = currentLocation.city || '';
+    if(!prov) return alerts;
     return alerts.filter(function(a){
       var sender = a.senderName || '';
-      // Also check if alert description/area mentions the province
+      var headline = a.headline || (a.eventType && a.eventType.name) || '';
       var desc = a.description || '';
-      return sender.indexOf(prov) !== -1 || desc.indexOf(prov) !== -1;
+      var combined = sender + ' ' + headline + ' ' + desc;
+      return combined.indexOf(prov) !== -1 || combined.indexOf(city) !== -1;
     });
   }
 
@@ -1451,29 +1422,23 @@
         if(filtered.length > 0) {
           saveAlertsToCache(filtered);
           renderAlerts(filtered, null);
-        } else {
-          // All alerts were from other provinces — check cache
-          var cached = getCachedAlerts();
-          if(cached && cached.alerts.length > 0) {
-            renderAlerts(cached.alerts, cached._ageHours);
-          } else {
-            renderAlerts([], null);
-          }
-        }
-      } else {
-        // API returned empty — check cache
-        var cached = getCachedAlerts();
-        if(cached && cached.alerts.length > 0) {
-          renderAlerts(cached.alerts, cached._ageHours);
-        } else {
-          renderAlerts([], null);
+          return;
         }
       }
-    }).catch(function(){
-      // Network error — fallback to cache
+      // API returned empty or all filtered out — check cache (with filter)
       var cached = getCachedAlerts();
       if(cached && cached.alerts.length > 0) {
-        renderAlerts(cached.alerts, cached._ageHours);
+        var filteredCache = filterAlertsByLocation(cached.alerts);
+        renderAlerts(filteredCache, cached._ageHours);
+      } else {
+        renderAlerts([], null);
+      }
+    }).catch(function(){
+      // Network error — fallback to cache (with filter)
+      var cached = getCachedAlerts();
+      if(cached && cached.alerts.length > 0) {
+        var filteredCache = filterAlertsByLocation(cached.alerts);
+        renderAlerts(filteredCache, cached._ageHours);
       } else {
         renderAlerts([], null);
       }
@@ -1544,49 +1509,6 @@
   }
   function escHtml(s) {
     var div=document.createElement('div'); div.textContent=s; return div.innerHTML;
-  }
-
-  /* ===== Province-Level Forecast (省会济南 ID: 101120101) ===== */
-  var provinceBase = { name: '山东省', capital: '济南', locationId: '101120101' };
-
-  function loadProvinceForecast() {
-    if(currentLocation.province !== '山东' && currentLocation.province !== provinceBase.name) {
-      document.getElementById('provinceSection').style.display = 'none';
-      return;
-    }
-    document.getElementById('provinceSection').style.display = '';
-    document.getElementById('provinceTitle').textContent = provinceBase.name + '概况';
-    document.getElementById('provinceSub').textContent = '省会' + provinceBase.capital + '预报';
-
-    fetch(QW_BASE + '/weather/7d?location=' + provinceBase.locationId + '&key=' + QW_KEY + '&lang=zh')
-      .then(function(r){return r.json()})
-      .then(function(data){
-        renderProvinceForecast(data.daily || []);
-      })
-      .catch(function(){
-        document.getElementById('provinceFcRow').innerHTML = '<span style="font-size:11px;color:var(--text-secondary);padding:4px">省级预报暂不可用</span>';
-      });
-  }
-
-  function renderProvinceForecast(days) {
-    var html = '';
-    for(var i = 0; i < Math.min(days.length, 7); i++){
-      var d = days[i];
-      var dateStr = d.fxDate || '';
-      var parts = dateStr.split('-');
-      var label = parts.length >= 2 ? (parts[1] + '/' + parts[2]) : dateStr;
-      var icon = getWeatherIcon(d.textDay || d.text);
-      var weather = d.textDay || d.text || '--';
-      var hi = d.tempMax || '--';
-      var lo = d.tempMin || '--';
-      html += '<div class="province-fc-card">';
-      html += '<div class="province-fc-card__date">' + escHtml(label) + '</div>';
-      html += '<div class="province-fc-card__icon">' + icon + '</div>';
-      html += '<div class="province-fc-card__weather" title="' + escHtml(weather) + '">' + escHtml(weather) + '</div>';
-      html += '<div class="province-fc-card__temps"><span class="province-fc-card__high">' + escHtml(hi) + '°</span><span class="province-fc-card__low">' + escHtml(lo) + '°</span></div>';
-      html += '</div>';
-    }
-    document.getElementById('provinceFcRow').innerHTML = html;
   }
 
   /* ===== Render Dashboard ===== */
