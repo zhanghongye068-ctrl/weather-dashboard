@@ -1376,16 +1376,16 @@
   var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
   function filterAlertsByLocation(alerts) {
-    // Only keep alerts relevant to current province
+    // Keep alerts relevant to current province (省级预警)
     var prov = currentLocation.province || '';
-    var city = currentLocation.city || '';
     if(!prov) return alerts;
     return alerts.filter(function(a){
       var sender = a.senderName || '';
       var headline = a.headline || (a.eventType && a.eventType.name) || '';
       var desc = a.description || '';
       var combined = sender + ' ' + headline + ' ' + desc;
-      return combined.indexOf(prov) !== -1 || combined.indexOf(city) !== -1;
+      // 省级预警：只要包含省份名即可（不再要求匹配城市名）
+      return combined.indexOf(prov) !== -1;
     });
   }
 
