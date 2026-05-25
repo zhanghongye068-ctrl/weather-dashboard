@@ -1367,7 +1367,9 @@
 
   function loadAlerts() {
     // Use new weatheralert/v1/current API (enabled) instead of old /warning/now (403)
-    var url = QW_BASE + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
+    // QW_BASE = '.../v7', but weatheralert API is at root, so build URL from scratch
+    var host = QW_BASE.replace(/\/v7$/, '');
+    var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
     fetch(url).then(function(r){return r.json()}).then(function(data){
       if(data.alerts){
         renderAlerts(data.alerts);
