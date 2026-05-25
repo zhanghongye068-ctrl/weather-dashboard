@@ -224,15 +224,15 @@
     .settings-save-btn:hover { background: linear-gradient(135deg, rgba(79,195,247,0.3), rgba(0,229,255,0.3)); }
 
     /* ===== Weather Hero Panel (NEW — no duplication) ===== */
-    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 10px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: nowrap; align-items: stretch; position: relative; overflow: hidden; }
+    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 10px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: nowrap; align-items: stretch; position: relative; overflow: hidden; max-height: 38vh; }
     .weather-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; background-image: linear-gradient(rgba(79,195,247,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(79,195,247,0.5) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; }
-    .weather-hero__alert-col { flex: 0 0 24%; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 12px; gap: 6px; overflow: hidden; }
+    .weather-hero__alert-col { flex: 0 0 24%; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 12px; gap: 6px; overflow: hidden; max-height: 36vh; }
     .weather-hero__alert-header { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .weather-hero__alert-icon { font-size: 22px; }
     .weather-hero__alert-title { font-size: 13px; color: var(--text-secondary); writing-mode: vertical-rl; letter-spacing: 4px; font-weight: 600; }
     .weather-hero__alert-badge { font-size: 10px; padding: 1px 8px; border-radius: 20px; background: rgba(105,240,174,0.15); color: var(--accent-green); font-weight: 600; }
     .weather-hero__alert-badge.has-alert { background: rgba(255,82,82,0.15); color: var(--accent-red); }
-    .weather-hero__alert-body { flex: 1; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+    .weather-hero__alert-body { flex: 1 1 auto; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; max-height: 28vh; }
     .weather-hero__alert-empty { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 11px; padding: 4px; text-align: center; }
     .weather-hero__alert-col .alert-section__empty { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px; font-size: 11px; color: var(--text-secondary); text-align: center; }
     .weather-hero__alert-col .alert-section__empty-icon { font-size: 14px; }
@@ -241,14 +241,16 @@
     .weather-hero__alert-col .alert-card__top { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .weather-hero__alert-col .alert-card__severity { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
     .weather-hero__alert-col .alert-card__headline { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; word-break: break-all; }
-    .weather-hero__alert-col .alert-card__time,
-    .weather-hero__alert-col .alert-card__desc,
-    .weather-hero__alert-col .alert-card__criteria,
-    .weather-hero__alert-col .alert-card__meta { display: none; }
+    .weather-hero__alert-col .alert-card__time { font-size: 10px; color: var(--accent-cyan); text-align: center; margin-top: 2px; }
+    .weather-hero__alert-col .alert-card__desc { font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; max-height: 72px; overflow-y: auto; }
+    .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar { width: 2px; }
+    .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 1px; }
+    .weather-hero__alert-col .alert-card__criteria { font-size: 9px; color: rgba(232,234,246,0.4); line-height: 1.4; margin-top: 2px; }
+    .weather-hero__alert-col .alert-card__meta { font-size: 9px; color: var(--accent-yellow); margin-top: 2px; text-align: center; }
     .weather-hero__alert-col .alert-card__instruction { font-size: 10px; margin-top: 4px; padding: 4px 6px; }
     .alert-cache-hint { font-size: 10px; color: var(--accent-yellow); text-align: center; padding: 2px 4px; margin-bottom: 2px; background: rgba(255,215,64,0.08); border-radius: 4px; }
     .weather-hero__alert-col .alert-cache-hint { font-size: 9px; }
-    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; }
+    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; max-height: 36vh; overflow: hidden; }
     .weather-hero__location { font-size: 13px; color: var(--text-secondary); margin-bottom: 2px; }
     .weather-hero__desc { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
     .weather-hero__temp { font-size: 68px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff6b35, #ff1744); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 12px rgba(255,107,53,0.25)); }
@@ -258,7 +260,7 @@
     .weather-hero__feel { margin-top: 3px; font-size: 13px; display: flex; align-items: center; gap: 5px; color: var(--text-secondary); }
     .weather-hero__feel-icon { font-size: 17px; }
 
-    .weather-hero__grid { flex: 0 0 52%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .weather-hero__grid { flex: 0 0 52%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 36vh; overflow: hidden; }
     .weather-hero__cell { background: rgba(255,255,255,0.14); border-radius: 8px; padding: 8px 12px; text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.1); transition: all .3s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; }
     .weather-hero__cell:hover { border-color: rgba(79,195,247,0.3); box-shadow: 0 0 24px rgba(79,195,247,0.1); }
     .weather-hero__cell-label { font-size: 14px; color: var(--text-secondary); letter-spacing: .3px; white-space: nowrap; }
@@ -301,16 +303,16 @@
     .card__title-icon { font-size: 15px; }
 
     /* ===== Main Grid ===== */
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; max-height: calc(62vh - 20px); overflow: hidden; }
     .full-width { grid-column: 1 / -1; }
     @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
 
     /* Chart containers */
-    .chart-container { width: 100%; height: 260px; }
-    .chart-container--sm { height: 240px; }
+    .chart-container { width: 100%; height: 220px; }
+    .chart-container--sm { height: 200px; }
 
     /* ===== Forecast Cards ===== */
-    .forecast-cards { position: relative; padding: 6px 16px 6px; }
+    .forecast-cards { position: relative; padding: 6px 16px 6px; max-height: 28vh; overflow: hidden; }
     .forecast-cards__row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
     .forecast-card { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; padding: 4px 2px; border-radius: 14px; transition: all .3s; position: relative; }
     .forecast-card:hover { background: rgba(255,255,255,0.06); }
@@ -1496,10 +1498,9 @@
         html+='<div class="alert-card__top">';
         html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+(isCancel?' 已解除':'')+'</span>';
         html+='<span class="alert-card__headline">'+escHtml(headline)+'</span>';
-        if(timeInfo) html+='<span class="alert-card__time">'+escHtml(timeInfo)+escHtml(expireInfo)+'</span>';
         html+='</div>';
+        if(timeInfo) html+='<div class="alert-card__time">'+escHtml(timeInfo)+escHtml(expireInfo)+'</div>';
         if(desc) html+='<div class="alert-card__desc">'+escHtml(desc)+'</div>';
-        if(instruction) html+='<div class="alert-card__instruction">🛡 防护措施：'+escHtml(instruction)+'</div>';
         if(criteria) html+='<div class="alert-card__criteria">ℹ '+escHtml(criteria)+'</div>';
         if(areaInfo) html+='<div class="alert-card__meta">📍 '+escHtml(areaInfo)+'</div>';
         html+='</div>';
