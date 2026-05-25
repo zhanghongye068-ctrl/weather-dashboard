@@ -1486,6 +1486,7 @@
           html+='<div class="alert-card__time">'+escHtml(timeStr)+'</div>';
         }
         if(desc) html+='<div class="alert-card__desc">'+escHtml(desc)+'</div>';
+        if(instruction) html+='<div class="alert-card__instruction">🛡️ 防护措施：'+escHtml(instruction)+'</div>';
         if(criteria) html+='<div class="alert-card__criteria">ℹ '+escHtml(criteria)+'</div>';
         if(areaInfo) html+='<div class="alert-card__meta">📍 '+escHtml(areaInfo)+'</div>';
         html+='</div>';
