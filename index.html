@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>海润智慧运维气象监测站</title>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <style>
@@ -131,8 +134,9 @@
 
     /* ===== Header ===== */
     .header { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px; margin-bottom: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); backdrop-filter: blur(20px); position: relative; z-index: 9999; }
-    .header__brand { display: flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; }
-    .header__brand span { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header__brand { display: flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; }
+.header__brand span { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header__version { font-size: 12px; font-weight: 400; opacity: 0.6; -webkit-text-fill-color: currentColor !important; background: none !important; }
     .header__datetime { font-size: 12px; color: var(--text-secondary); text-align: right; line-height: 1.4; }
     .header__right { display: flex; align-items: center; gap: 8px; }
 
@@ -198,6 +202,8 @@
     .alert-card__headline { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
     .alert-card__time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
     .alert-card__desc { font-size: 11px; color: var(--text-secondary); line-height: 1.6; margin-top: 3px; padding-left: 2px; }
+    .alert-card__instruction { font-size: 11px; color: rgba(232,234,246,0.7); line-height: 1.6; margin-top: 6px; padding: 6px 8px; background: rgba(255,215,64,0.06); border-left: 3px solid var(--accent-yellow); border-radius: 0 6px 6px 0; }
+    .alert-card__criteria { font-size: 10px; color: var(--text-tertiary, rgba(232,234,246,0.4)); line-height: 1.5; margin-top: 4px; padding-left: 2px; }
     .alert-card__meta { display: flex; gap: 16px; margin-top: 4px; font-size: 11px; color: rgba(232,234,246,0.45); }
 
     /* ===== Settings Panel ===== */
@@ -222,15 +228,15 @@
     .settings-save-btn:hover { background: linear-gradient(135deg, rgba(79,195,247,0.3), rgba(0,229,255,0.3)); }
 
     /* ===== Weather Hero Panel (NEW — no duplication) ===== */
-    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 10px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: nowrap; align-items: stretch; position: relative; overflow: hidden; }
+    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 10px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: nowrap; align-items: stretch; position: relative; overflow: hidden; max-height: 38vh; }
     .weather-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; background-image: linear-gradient(rgba(79,195,247,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(79,195,247,0.5) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; }
-    .weather-hero__alert-col { flex: 0 0 24%; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 12px; gap: 6px; overflow: hidden; }
+    .weather-hero__alert-col { flex: 0 0 24%; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 12px; gap: 6px; overflow: hidden; max-height: 36vh; }
     .weather-hero__alert-header { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .weather-hero__alert-icon { font-size: 22px; }
     .weather-hero__alert-title { font-size: 13px; color: var(--text-secondary); writing-mode: vertical-rl; letter-spacing: 4px; font-weight: 600; }
     .weather-hero__alert-badge { font-size: 10px; padding: 1px 8px; border-radius: 20px; background: rgba(105,240,174,0.15); color: var(--accent-green); font-weight: 600; }
     .weather-hero__alert-badge.has-alert { background: rgba(255,82,82,0.15); color: var(--accent-red); }
-    .weather-hero__alert-body { flex: 1; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+    .weather-hero__alert-body { flex: 1 1 auto; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; max-height: 28vh; }
     .weather-hero__alert-empty { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 11px; padding: 4px; text-align: center; }
     .weather-hero__alert-col .alert-section__empty { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px; font-size: 11px; color: var(--text-secondary); text-align: center; }
     .weather-hero__alert-col .alert-section__empty-icon { font-size: 14px; }
@@ -239,10 +245,16 @@
     .weather-hero__alert-col .alert-card__top { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .weather-hero__alert-col .alert-card__severity { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
     .weather-hero__alert-col .alert-card__headline { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; word-break: break-all; }
-    .weather-hero__alert-col .alert-card__time,
-    .weather-hero__alert-col .alert-card__desc,
-    .weather-hero__alert-col .alert-card__meta { display: none; }
-    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; }
+    .weather-hero__alert-col .alert-card__time { font-size: 10px; color: var(--accent-cyan); text-align: center; margin-top: 2px; }
+    .weather-hero__alert-col .alert-card__desc { font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; max-height: 72px; overflow-y: auto; }
+    .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar { width: 2px; }
+    .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 1px; }
+    .weather-hero__alert-col .alert-card__criteria { font-size: 9px; color: rgba(232,234,246,0.4); line-height: 1.4; margin-top: 2px; }
+    .weather-hero__alert-col .alert-card__meta { font-size: 9px; color: var(--accent-yellow); margin-top: 2px; text-align: center; }
+    .weather-hero__alert-col .alert-card__instruction { font-size: 10px; margin-top: 4px; padding: 4px 6px; }
+    .alert-cache-hint { font-size: 10px; color: var(--accent-yellow); text-align: center; padding: 2px 4px; margin-bottom: 2px; background: rgba(255,215,64,0.08); border-radius: 4px; }
+    .weather-hero__alert-col .alert-cache-hint { font-size: 9px; }
+    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; max-height: 36vh; overflow: hidden; }
     .weather-hero__location { font-size: 13px; color: var(--text-secondary); margin-bottom: 2px; }
     .weather-hero__desc { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
     .weather-hero__temp { font-size: 68px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff6b35, #ff1744); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 12px rgba(255,107,53,0.25)); }
@@ -252,7 +264,7 @@
     .weather-hero__feel { margin-top: 3px; font-size: 13px; display: flex; align-items: center; gap: 5px; color: var(--text-secondary); }
     .weather-hero__feel-icon { font-size: 17px; }
 
-    .weather-hero__grid { flex: 0 0 52%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .weather-hero__grid { flex: 0 0 52%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 36vh; overflow: hidden; }
     .weather-hero__cell { background: rgba(255,255,255,0.14); border-radius: 8px; padding: 8px 12px; text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.1); transition: all .3s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; }
     .weather-hero__cell:hover { border-color: rgba(79,195,247,0.3); box-shadow: 0 0 24px rgba(79,195,247,0.1); }
     .weather-hero__cell-label { font-size: 14px; color: var(--text-secondary); letter-spacing: .3px; white-space: nowrap; }
@@ -295,16 +307,16 @@
     .card__title-icon { font-size: 15px; }
 
     /* ===== Main Grid ===== */
-    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; max-height: calc(62vh - 20px); overflow: hidden; }
     .full-width { grid-column: 1 / -1; }
     @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
 
     /* Chart containers */
-    .chart-container { width: 100%; height: 260px; }
-    .chart-container--sm { height: 240px; }
+    .chart-container { width: 100%; height: 220px; }
+    .chart-container--sm { height: 200px; }
 
     /* ===== Forecast Cards ===== */
-    .forecast-cards { position: relative; padding: 6px 16px 6px; }
+    .forecast-cards { position: relative; padding: 6px 16px 6px; max-height: 28vh; overflow: hidden; }
     .forecast-cards__row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
     .forecast-card { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; padding: 4px 2px; border-radius: 14px; transition: all .3s; position: relative; }
     .forecast-card:hover { background: rgba(255,255,255,0.06); }
@@ -465,7 +477,7 @@
   <div class="dashboard">
     <!-- Header -->
     <header class="header">
-      <div class="header__brand">🌤 <span>海润智慧运维气象监测站</span></div>
+      <div class="header__brand">🌤 <span>海润智慧运维气象监测站</span><span class="header__version"> v2026.05.25</span></div>
       <div class="header__right">
         <div class="city-selector" id="citySelector">
           <button class="city-selector__btn" id="cityBtn"><span id="cityBtnLabel">北京 朝阳区</span></button>
@@ -590,7 +602,7 @@
     </div>
 
     <!-- 24h Hourly (Priority: placed right after hero) -->
-    <div class="card full-width" style="margin-bottom:12px">
+    <div class="card full-width" style="margin-bottom:6px">
       <div class="card__title"><span class="card__title-icon">📈</span> 未来24小时逐时数据</div>
       <div class="chart-container" id="hourlyChart"></div>
     </div>
@@ -1362,80 +1374,113 @@
     return result;
   }
 
-  /* ===== Weather Alerts (QWeather — location-specific) ===== */
-  var lastAlertCount = -1; // track alert count to detect changes
+  /* ===== Weather Alerts (QWeather + localStorage 24h cache) ===== */
+  var lastAlertCount = -1;
+  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts_v3';
+  var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+
+  function saveAlertsToCache(alerts) {
+    try {
+      if(alerts && alerts.length > 0) {
+        localStorage.setItem(ALERTS_CACHE_KEY, JSON.stringify({
+          alerts: alerts,
+          timestamp: Date.now()
+        }));
+      }
+    } catch(e) {}
+  }
+
+  function getCachedAlerts() {
+    try {
+      var raw = localStorage.getItem(ALERTS_CACHE_KEY);
+      if(!raw) return null;
+      var cache = JSON.parse(raw);
+      if(!cache || !cache.alerts) return null;
+      var age = Date.now() - cache.timestamp;
+      if(age > ALERTS_CACHE_MAX_AGE) {
+        localStorage.removeItem(ALERTS_CACHE_KEY);
+        return null;
+      }
+      cache._ageHours = Math.round(age / 3600000 * 10) / 10;
+      return cache;
+    } catch(e) { return null; }
+  }
 
   function loadAlerts() {
-    var loc = currentLocation.lng + ',' + currentLocation.lat;
-    var url = QW_BASE + '/warning/now?location=' + loc + '&key=' + QW_KEY + '&lang=zh';
+    var host = QW_BASE.replace(/\/v7$/, '');
+    var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
     fetch(url).then(function(r){return r.json()}).then(function(data){
-      var errCode = data.code || (data.error && data.error.status);
-      if(errCode === '200'){
-        var warnings = data.warning || [];
-        renderAlerts(warnings);
-      } else if(errCode === '403' || errCode === 403){
-        // QWeather subscription lacks warning API permission — show hint
-        renderAlerts(null, '预警接口未授权，请在和风天气控制台开启「灾害预警」权限');
+      if(data.alerts && data.alerts.length > 0) {
+        saveAlertsToCache(data.alerts);
+        renderAlerts(data.alerts, null);
       } else {
-        renderAlerts([]);
+        try { localStorage.removeItem(ALERTS_CACHE_KEY); } catch(e) {}
+        renderAlerts([], null);
       }
-    }).catch(function(){ renderAlerts([]); });
+    }).catch(function(err){
+      console.warn('[预警] 网络失败:', err);
+      var cached = getCachedAlerts();
+      renderAlerts(cached ? cached.alerts : [], cached ? cached._ageHours : null);
+    });
   }
-  function parseQwLevel(severity, severityColor) {
-    // QWeather severity: Minor, Moderate, Severe, Extreme
-    // severityColor: Blue, Yellow, Orange, Red
+
+  function parseQwLevel(severity, colorObj) {
     var s = (severity||'').toLowerCase();
-    var c = (severityColor||'').toLowerCase();
+    var c = (colorObj && colorObj.code ? colorObj.code : '').toLowerCase();
     if(c.includes('red') || s.includes('extreme')) return {color:'red', icon:'🔴', label:'红色/I级'};
     if(c.includes('orange') || s.includes('severe')) return {color:'orange', icon:'🟠', label:'橙色/II级'};
     if(c.includes('yellow') || s.includes('moderate')) return {color:'yellow', icon:'🟡', label:'黄色/III级'};
     if(c.includes('blue') || s.includes('minor')) return {color:'blue', icon:'🔵', label:'蓝色/IV级'};
     return {color:'blue', icon:'🔵', label:'蓝色/IV级'};
   }
-  function renderAlerts(alerts, hint) {
+
+  function renderAlerts(alerts, ageHours) {
     var $body=document.getElementById('alertBody');
     var $badge=document.getElementById('alertBadge');
-    // Detect alert count change for toast notification
     var newCount = 0;
-    if(hint){
-      $body.innerHTML='<div class="alert-section__empty"><span class="alert-section__empty-icon">⚠️</span><span>'+escHtml(hint)+'</span></div>';
-      $badge.textContent='未授权';
-      $badge.className='weather-hero__alert-badge';
-      lastAlertCount = 0;
-      return;
-    }
-    if(!alerts||alerts.length===0){
+    var isCached = (ageHours != null);
+
+    if(!alerts || alerts.length === 0){
       newCount = 0;
       $body.innerHTML='<div class="alert-section__empty"><span class="alert-section__empty-icon">✅</span><span>当前暂无气象预警信息</span></div>';
       $badge.textContent='无预警';
       $badge.className='weather-hero__alert-badge';
     } else {
       newCount = alerts.length;
-      $badge.textContent=newCount+'条';
+      $badge.textContent = newCount + '条' + (isCached ? '·缓存' : '');
       $badge.className='weather-hero__alert-badge has-alert';
       var html='';
+      if(isCached) {
+        html+='<div class="alert-cache-hint">⏱ 数据缓存 ' + ageHours + ' 小时前，等待刷新</div>';
+      }
       for(var i=0;i<alerts.length;i++){
         var a=alerts[i];
-        var lv = parseQwLevel(a.severity, a.severityColor);
-        var headline = a.headline || a.typeName || '天气预警';
-        var desc = a.text || '';
+        var lv = parseQwLevel(a.severity, a.color);
+        var headline = a.headline || (a.eventType && a.eventType.name) || '天气预警';
+        var desc = a.description || '';
         if(desc.length > 600) desc = desc.substring(0,600)+'…';
-        var timeInfo = a.pubTime ? ('发布时间: ' + a.pubTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
-        var areaInfo = a.sender || '';
+        var instruction = a.instruction || '';
+        if(instruction.length > 800) instruction = instruction.substring(0,800)+'…';
+        var criteria = a.criteria || '';
+        var timeInfo = a.issuedTime ? ('发布时间: ' + a.issuedTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
+        var expireInfo = a.expireTime ? (' · 失效: ' + a.expireTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
+        var areaInfo = a.senderName || '';
+        var isCancel = a.messageType && a.messageType.code === 'cancel';
 
         html+='<div class="alert-card">';
         html+='<div class="alert-card__top">';
-        html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+'</span>';
+        html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+(isCancel?' 已解除':'')+'</span>';
         html+='<span class="alert-card__headline">'+escHtml(headline)+'</span>';
-        if(timeInfo) html+='<span class="alert-card__time">'+escHtml(timeInfo)+'</span>';
         html+='</div>';
+        if(timeInfo) html+='<div class="alert-card__time">'+escHtml(timeInfo)+escHtml(expireInfo)+'</div>';
         if(desc) html+='<div class="alert-card__desc">'+escHtml(desc)+'</div>';
+        if(criteria) html+='<div class="alert-card__criteria">ℹ '+escHtml(criteria)+'</div>';
         if(areaInfo) html+='<div class="alert-card__meta">📍 '+escHtml(areaInfo)+'</div>';
         html+='</div>';
       }
       $body.innerHTML=html;
     }
-    // Toast on alert count change (skip first load)
+
     if(lastAlertCount !== -1 && newCount !== lastAlertCount) {
       if(newCount > lastAlertCount) {
         toast('error', '预警更新: 新增 ' + (newCount - lastAlertCount) + ' 条气象预警', 4000);
