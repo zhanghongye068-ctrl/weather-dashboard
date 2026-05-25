@@ -1399,10 +1399,23 @@
   var ALERTS_CACHE_KEY = 'weather_dashboard_alerts';
   var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
+  function filterAlertsByLocation(alerts) {
+    // Only keep alerts whose senderName (e.g. "四川省气象台") contains the current province name
+    var prov = currentLocation.province || '';
+    if(!prov) return alerts; // no province info, show all
+    // Exact province match: alert sender contains province name
+    return alerts.filter(function(a){
+      var sender = a.senderName || '';
+      // Also check if alert description/area mentions the province
+      var desc = a.description || '';
+      return sender.indexOf(prov) !== -1 || desc.indexOf(prov) !== -1;
+    });
+  }
+
   function saveAlertsToCache(alerts) {
     try {
       if(alerts && alerts.length > 0) {
-        var cache = { alerts: alerts, timestamp: Date.now(), location: currentLocation.displayName };
+        var cache = { alerts: alerts, timestamp: Date.now(), province: currentLocation.province, location: currentLocation.displayName };
         localStorage.setItem(ALERTS_CACHE_KEY, JSON.stringify(cache));
       }
     } catch(e) { /* localStorage may be full or disabled */ }
@@ -1413,6 +1426,11 @@
       if(!raw) return null;
       var cache = JSON.parse(raw);
       if(!cache || !cache.alerts) return null;
+      // Invalidate cache if province changed
+      if(cache.province && cache.province !== currentLocation.province) {
+        localStorage.removeItem(ALERTS_CACHE_KEY);
+        return null;
+      }
       var age = Date.now() - cache.timestamp;
       if(age > ALERTS_CACHE_MAX_AGE) {
         localStorage.removeItem(ALERTS_CACHE_KEY);
@@ -1428,9 +1446,20 @@
     var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
     fetch(url).then(function(r){return r.json()}).then(function(data){
       if(data.alerts && data.alerts.length > 0){
-        // Fresh alerts from API — save & render
-        saveAlertsToCache(data.alerts);
-        renderAlerts(data.alerts, null);
+        // Filter by current province, then save & render
+        var filtered = filterAlertsByLocation(data.alerts);
+        if(filtered.length > 0) {
+          saveAlertsToCache(filtered);
+          renderAlerts(filtered, null);
+        } else {
+          // All alerts were from other provinces — check cache
+          var cached = getCachedAlerts();
+          if(cached && cached.alerts.length > 0) {
+            renderAlerts(cached.alerts, cached._ageHours);
+          } else {
+            renderAlerts([], null);
+          }
+        }
       } else {
         // API returned empty — check cache
         var cached = getCachedAlerts();
