@@ -242,6 +242,8 @@
     .weather-hero__alert-col .alert-card__time,
     .weather-hero__alert-col .alert-card__desc,
     .weather-hero__alert-col .alert-card__meta { display: none; }
+    .alert-cache-hint { font-size: 10px; color: var(--accent-yellow); text-align: center; padding: 2px 4px; margin-bottom: 2px; background: rgba(255,215,64,0.08); border-radius: 4px; }
+    .weather-hero__alert-col .alert-cache-hint { font-size: 9px; }
     .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; }
     .weather-hero__location { font-size: 13px; color: var(--text-secondary); margin-bottom: 2px; }
     .weather-hero__desc { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
@@ -318,6 +320,23 @@
     .forecast-cards__wave svg { width: 100%; height: 100%; display: block; }
     .forecast-cards__wave path.wave-main { fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2)); }
     .forecast-cards__wave path.wave-sub { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 1.5; stroke-linecap: round; }
+
+    /* ===== Province Forecast Section ===== */
+    .province-section { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 8px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; }
+    .province-section__header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .province-section__header-icon { font-size: 16px; }
+    .province-section__header-title { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+    .province-section__header-sub { font-size: 10px; color: var(--text-secondary); }
+    .province-forecast-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+    .province-forecast-row::-webkit-scrollbar { height: 4px; }
+    .province-forecast-row::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    .province-fc-card { flex: 0 0 auto; min-width: 56px; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px solid rgba(255,255,255,0.06); }
+    .province-fc-card__date { font-size: 9px; color: var(--text-secondary); white-space: nowrap; }
+    .province-fc-card__icon { font-size: 18px; line-height: 1; margin: 2px 0; filter: drop-shadow(0 0 4px rgba(255,255,255,0.3)); }
+    .province-fc-card__weather { font-size: 9px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52px; }
+    .province-fc-card__temps { font-size: 10px; font-weight: 600; }
+    .province-fc-card__high { color: var(--accent-orange); }
+    .province-fc-card__low { color: var(--accent-blue); margin-left: 3px; }
 
     /* ===== Data Table ===== */
     .data-scroll { max-height: 240px; overflow-y: auto; margin-top: 6px; }
@@ -590,9 +609,21 @@
     </div>
 
     <!-- 24h Hourly (Priority: placed right after hero) -->
-    <div class="card full-width" style="margin-bottom:12px">
+    <div class="card full-width" style="margin-bottom:6px">
       <div class="card__title"><span class="card__title-icon">📈</span> 未来24小时逐时数据</div>
       <div class="chart-container" id="hourlyChart"></div>
+    </div>
+
+    <!-- Province Overview -->
+    <div class="province-section" id="provinceSection">
+      <div class="province-section__header">
+        <span class="province-section__header-icon">🗺️</span>
+        <span class="province-section__header-title" id="provinceTitle">山东省概况</span>
+        <span class="province-section__header-sub" id="provinceSub">省会济南预报</span>
+      </div>
+      <div class="province-forecast-row" id="provinceFcRow">
+        <div class="province-fc-card"><div class="province-fc-card__date">--</div><div class="province-fc-card__icon">--</div><div class="province-fc-card__weather">加载中</div><div class="province-fc-card__temps">--</div></div>
+      </div>
     </div>
 
     <!-- Bottom Charts -->
@@ -1321,6 +1352,7 @@
     });
 
     loadAlerts();
+    loadProvinceForecast();
   }
 
   function buildMergedHourly(qwHourly, radHourly) {
@@ -1362,26 +1394,64 @@
     return result;
   }
 
-  /* ===== Weather Alerts (QWeather — location-specific) ===== */
-  var lastAlertCount = -1; // track alert count to detect changes
+  /* ===== Weather Alerts (QWeather + localStorage 24h cache) ===== */
+  var lastAlertCount = -1;
+  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts';
+  var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
+
+  function saveAlertsToCache(alerts) {
+    try {
+      if(alerts && alerts.length > 0) {
+        var cache = { alerts: alerts, timestamp: Date.now(), location: currentLocation.displayName };
+        localStorage.setItem(ALERTS_CACHE_KEY, JSON.stringify(cache));
+      }
+    } catch(e) { /* localStorage may be full or disabled */ }
+  }
+  function getCachedAlerts() {
+    try {
+      var raw = localStorage.getItem(ALERTS_CACHE_KEY);
+      if(!raw) return null;
+      var cache = JSON.parse(raw);
+      if(!cache || !cache.alerts) return null;
+      var age = Date.now() - cache.timestamp;
+      if(age > ALERTS_CACHE_MAX_AGE) {
+        localStorage.removeItem(ALERTS_CACHE_KEY);
+        return null;
+      }
+      cache._ageHours = Math.round(age / 3600000 * 10) / 10;
+      return cache;
+    } catch(e) { return null; }
+  }
 
   function loadAlerts() {
-    // Use new weatheralert/v1/current API (enabled) instead of old /warning/now (403)
-    // QW_BASE = '.../v7', but weatheralert API is at root, so build URL from scratch
     var host = QW_BASE.replace(/\/v7$/, '');
     var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
     fetch(url).then(function(r){return r.json()}).then(function(data){
-      if(data.alerts){
-        renderAlerts(data.alerts);
-      } else if(data.error && (data.error.status === 403 || data.error.status === '403')){
-        renderAlerts(null, '预警接口未授权，请在和风天气控制台开启「灾害预警」权限');
+      if(data.alerts && data.alerts.length > 0){
+        // Fresh alerts from API — save & render
+        saveAlertsToCache(data.alerts);
+        renderAlerts(data.alerts, null);
       } else {
-        renderAlerts([]);
+        // API returned empty — check cache
+        var cached = getCachedAlerts();
+        if(cached && cached.alerts.length > 0) {
+          renderAlerts(cached.alerts, cached._ageHours);
+        } else {
+          renderAlerts([], null);
+        }
       }
-    }).catch(function(){ renderAlerts([]); });
+    }).catch(function(){
+      // Network error — fallback to cache
+      var cached = getCachedAlerts();
+      if(cached && cached.alerts.length > 0) {
+        renderAlerts(cached.alerts, cached._ageHours);
+      } else {
+        renderAlerts([], null);
+      }
+    });
   }
+
   function parseQwLevel(severity, colorObj) {
-    // weatheralert/v1/current: severity string + color.code
     var s = (severity||'').toLowerCase();
     var c = (colorObj && colorObj.code ? colorObj.code : '').toLowerCase();
     if(c.includes('red') || s.includes('extreme')) return {color:'red', icon:'🔴', label:'红色/I级'};
@@ -1390,28 +1460,26 @@
     if(c.includes('blue') || s.includes('minor')) return {color:'blue', icon:'🔵', label:'蓝色/IV级'};
     return {color:'blue', icon:'🔵', label:'蓝色/IV级'};
   }
-  function renderAlerts(alerts, hint) {
+
+  function renderAlerts(alerts, ageHours) {
     var $body=document.getElementById('alertBody');
     var $badge=document.getElementById('alertBadge');
-    // Detect alert count change for toast notification
     var newCount = 0;
-    if(hint){
-      $body.innerHTML='<div class="alert-section__empty"><span class="alert-section__empty-icon">⚠️</span><span>'+escHtml(hint)+'</span></div>';
-      $badge.textContent='未授权';
-      $badge.className='weather-hero__alert-badge';
-      lastAlertCount = 0;
-      return;
-    }
-    if(!alerts||alerts.length===0){
+    var isCached = (ageHours != null);
+
+    if(!alerts || alerts.length === 0){
       newCount = 0;
       $body.innerHTML='<div class="alert-section__empty"><span class="alert-section__empty-icon">✅</span><span>当前暂无气象预警信息</span></div>';
       $badge.textContent='无预警';
       $badge.className='weather-hero__alert-badge';
     } else {
       newCount = alerts.length;
-      $badge.textContent=newCount+'条';
+      $badge.textContent = newCount + '条' + (isCached ? '·缓存' : '');
       $badge.className='weather-hero__alert-badge has-alert';
       var html='';
+      if(isCached) {
+        html+='<div class="alert-cache-hint">⏱ 数据缓存 ' + ageHours + ' 小时前，等待刷新</div>';
+      }
       for(var i=0;i<alerts.length;i++){
         var a=alerts[i];
         var lv = parseQwLevel(a.severity, a.color);
@@ -1433,7 +1501,7 @@
       }
       $body.innerHTML=html;
     }
-    // Toast on alert count change (skip first load)
+
     if(lastAlertCount !== -1 && newCount !== lastAlertCount) {
       if(newCount > lastAlertCount) {
         toast('error', '预警更新: 新增 ' + (newCount - lastAlertCount) + ' 条气象预警', 4000);
@@ -1447,6 +1515,49 @@
   }
   function escHtml(s) {
     var div=document.createElement('div'); div.textContent=s; return div.innerHTML;
+  }
+
+  /* ===== Province-Level Forecast (省会济南 ID: 101120101) ===== */
+  var provinceBase = { name: '山东省', capital: '济南', locationId: '101120101' };
+
+  function loadProvinceForecast() {
+    if(currentLocation.province !== '山东' && currentLocation.province !== provinceBase.name) {
+      document.getElementById('provinceSection').style.display = 'none';
+      return;
+    }
+    document.getElementById('provinceSection').style.display = '';
+    document.getElementById('provinceTitle').textContent = provinceBase.name + '概况';
+    document.getElementById('provinceSub').textContent = '省会' + provinceBase.capital + '预报';
+
+    fetch(QW_BASE + '/weather/7d?location=' + provinceBase.locationId + '&key=' + QW_KEY + '&lang=zh')
+      .then(function(r){return r.json()})
+      .then(function(data){
+        renderProvinceForecast(data.daily || []);
+      })
+      .catch(function(){
+        document.getElementById('provinceFcRow').innerHTML = '<span style="font-size:11px;color:var(--text-secondary);padding:4px">省级预报暂不可用</span>';
+      });
+  }
+
+  function renderProvinceForecast(days) {
+    var html = '';
+    for(var i = 0; i < Math.min(days.length, 7); i++){
+      var d = days[i];
+      var dateStr = d.fxDate || '';
+      var parts = dateStr.split('-');
+      var label = parts.length >= 2 ? (parts[1] + '/' + parts[2]) : dateStr;
+      var icon = getWeatherIcon(d.textDay || d.text);
+      var weather = d.textDay || d.text || '--';
+      var hi = d.tempMax || '--';
+      var lo = d.tempMin || '--';
+      html += '<div class="province-fc-card">';
+      html += '<div class="province-fc-card__date">' + escHtml(label) + '</div>';
+      html += '<div class="province-fc-card__icon">' + icon + '</div>';
+      html += '<div class="province-fc-card__weather" title="' + escHtml(weather) + '">' + escHtml(weather) + '</div>';
+      html += '<div class="province-fc-card__temps"><span class="province-fc-card__high">' + escHtml(hi) + '°</span><span class="province-fc-card__low">' + escHtml(lo) + '°</span></div>';
+      html += '</div>';
+    }
+    document.getElementById('provinceFcRow').innerHTML = html;
   }
 
   /* ===== Render Dashboard ===== */
