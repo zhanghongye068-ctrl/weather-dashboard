@@ -198,6 +198,8 @@
     .alert-card__headline { font-size: 13px; font-weight: 700; color: var(--text-primary); flex: 1; }
     .alert-card__time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
     .alert-card__desc { font-size: 11px; color: var(--text-secondary); line-height: 1.6; margin-top: 3px; padding-left: 2px; }
+    .alert-card__instruction { font-size: 11px; color: rgba(232,234,246,0.7); line-height: 1.6; margin-top: 6px; padding: 6px 8px; background: rgba(255,215,64,0.06); border-left: 3px solid var(--accent-yellow); border-radius: 0 6px 6px 0; }
+    .alert-card__criteria { font-size: 10px; color: var(--text-tertiary, rgba(232,234,246,0.4)); line-height: 1.5; margin-top: 4px; padding-left: 2px; }
     .alert-card__meta { display: flex; gap: 16px; margin-top: 4px; font-size: 11px; color: rgba(232,234,246,0.45); }
 
     /* ===== Settings Panel ===== */
@@ -241,7 +243,9 @@
     .weather-hero__alert-col .alert-card__headline { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; word-break: break-all; }
     .weather-hero__alert-col .alert-card__time,
     .weather-hero__alert-col .alert-card__desc,
+    .weather-hero__alert-col .alert-card__criteria,
     .weather-hero__alert-col .alert-card__meta { display: none; }
+    .weather-hero__alert-col .alert-card__instruction { font-size: 10px; margin-top: 4px; padding: 4px 6px; }
     .alert-cache-hint { font-size: 10px; color: var(--accent-yellow); text-align: center; padding: 2px 4px; margin-bottom: 2px; background: rgba(255,215,64,0.08); border-radius: 4px; }
     .weather-hero__alert-col .alert-cache-hint { font-size: 9px; }
     .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; }
@@ -1480,16 +1484,23 @@
         var headline = a.headline || (a.eventType && a.eventType.name) || '天气预警';
         var desc = a.description || '';
         if(desc.length > 600) desc = desc.substring(0,600)+'…';
+        var instruction = a.instruction || '';
+        if(instruction.length > 800) instruction = instruction.substring(0,800)+'…';
+        var criteria = a.criteria || '';
         var timeInfo = a.issuedTime ? ('发布时间: ' + a.issuedTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
+        var expireInfo = a.expireTime ? (' · 失效: ' + a.expireTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
         var areaInfo = a.senderName || '';
+        var isCancel = a.messageType && a.messageType.code === 'cancel';
 
         html+='<div class="alert-card">';
         html+='<div class="alert-card__top">';
-        html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+'</span>';
+        html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+(isCancel?' 已解除':'')+'</span>';
         html+='<span class="alert-card__headline">'+escHtml(headline)+'</span>';
-        if(timeInfo) html+='<span class="alert-card__time">'+escHtml(timeInfo)+'</span>';
+        if(timeInfo) html+='<span class="alert-card__time">'+escHtml(timeInfo)+escHtml(expireInfo)+'</span>';
         html+='</div>';
         if(desc) html+='<div class="alert-card__desc">'+escHtml(desc)+'</div>';
+        if(instruction) html+='<div class="alert-card__instruction">🛡 防护措施：'+escHtml(instruction)+'</div>';
+        if(criteria) html+='<div class="alert-card__criteria">ℹ '+escHtml(criteria)+'</div>';
         if(areaInfo) html+='<div class="alert-card__meta">📍 '+escHtml(areaInfo)+'</div>';
         html+='</div>';
       }
