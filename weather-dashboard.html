@@ -1372,42 +1372,26 @@
 
   /* ===== Weather Alerts (QWeather + localStorage 24h cache) ===== */
   var lastAlertCount = -1;
-  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts_v2';
-  var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
-
-  function filterAlertsByLocation(alerts) {
-    // Keep alerts relevant to current province (省级预警)
-    var prov = currentLocation.province || '';
-    if(!prov) return alerts;
-    return alerts.filter(function(a){
-      var sender = a.senderName || '';
-      var headline = a.headline || (a.eventType && a.eventType.name) || '';
-      var desc = a.description || '';
-      var combined = sender + ' ' + headline + ' ' + desc;
-      // 省级预警：只要包含省份名即可（不再要求匹配城市名）
-      return combined.indexOf(prov) !== -1;
-    });
-  }
+  var ALERTS_CACHE_KEY = 'weather_dashboard_alerts_v3';
+  var ALERTS_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 
   function saveAlertsToCache(alerts) {
     try {
       if(alerts && alerts.length > 0) {
-        var cache = { alerts: alerts, timestamp: Date.now(), province: currentLocation.province, location: currentLocation.displayName };
-        localStorage.setItem(ALERTS_CACHE_KEY, JSON.stringify(cache));
+        localStorage.setItem(ALERTS_CACHE_KEY, JSON.stringify({
+          alerts: alerts,
+          timestamp: Date.now()
+        }));
       }
-    } catch(e) { /* localStorage may be full or disabled */ }
+    } catch(e) {}
   }
+
   function getCachedAlerts() {
     try {
       var raw = localStorage.getItem(ALERTS_CACHE_KEY);
       if(!raw) return null;
       var cache = JSON.parse(raw);
       if(!cache || !cache.alerts) return null;
-      // Invalidate cache if province changed
-      if(cache.province && cache.province !== currentLocation.province) {
-        localStorage.removeItem(ALERTS_CACHE_KEY);
-        return null;
-      }
       var age = Date.now() - cache.timestamp;
       if(age > ALERTS_CACHE_MAX_AGE) {
         localStorage.removeItem(ALERTS_CACHE_KEY);
@@ -1422,29 +1406,17 @@
     var host = QW_BASE.replace(/\/v7$/, '');
     var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
     fetch(url).then(function(r){return r.json()}).then(function(data){
-      // API returned alerts directly in data.alerts
-      if(data.alerts && data.alerts.length > 0){
-        var filtered = filterAlertsByLocation(data.alerts);
-        if(filtered.length > 0) {
-          saveAlertsToCache(filtered);
-          renderAlerts(filtered, null);
-          return;
-        }
-      }
-      // API returned successfully but no alerts for this location
-      // Clear stale cache and show empty — do NOT fall back to cache
-      try { localStorage.removeItem(ALERTS_CACHE_KEY); } catch(e) {}
-      renderAlerts([], null);
-    }).catch(function(err){
-      console.warn('[预警] 网络请求失败:', err);
-      // Network error — fallback to cache ONLY on failure
-      var cached = getCachedAlerts();
-      if(cached && cached.alerts.length > 0) {
-        var filteredCache = filterAlertsByLocation(cached.alerts);
-        renderAlerts(filteredCache, cached._ageHours);
+      if(data.alerts && data.alerts.length > 0) {
+        saveAlertsToCache(data.alerts);
+        renderAlerts(data.alerts, null);
       } else {
+        try { localStorage.removeItem(ALERTS_CACHE_KEY); } catch(e) {}
         renderAlerts([], null);
       }
+    }).catch(function(err){
+      console.warn('[预警] 网络失败:', err);
+      var cached = getCachedAlerts();
+      renderAlerts(cached ? cached.alerts : [], cached ? cached._ageHours : null);
     });
   }
 
