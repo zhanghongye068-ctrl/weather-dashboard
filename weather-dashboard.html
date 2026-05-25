@@ -1431,16 +1431,13 @@
           return;
         }
       }
-      // API returned empty or all filtered out — check cache
-      var cached = getCachedAlerts();
-      if(cached && cached.alerts.length > 0) {
-        var filteredCache = filterAlertsByLocation(cached.alerts);
-        renderAlerts(filteredCache, cached._ageHours);
-      } else {
-        renderAlerts([], null);
-      }
+      // API returned successfully but no alerts for this location
+      // Clear stale cache and show empty — do NOT fall back to cache
+      try { localStorage.removeItem(ALERTS_CACHE_KEY); } catch(e) {}
+      renderAlerts([], null);
     }).catch(function(err){
       console.warn('[预警] 网络请求失败:', err);
+      // Network error — fallback to cache ONLY on failure
       var cached = getCachedAlerts();
       if(cached && cached.alerts.length > 0) {
         var filteredCache = filterAlertsByLocation(cached.alerts);
