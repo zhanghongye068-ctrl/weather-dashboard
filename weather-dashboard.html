@@ -1418,13 +1418,47 @@
     } catch(e) { return null; }
   }
 
+  /* Normalize QWeather warning API response to internal alert format */
+  function normalizeWarnings(warnings) {
+    if(!warnings || !warnings.length) return [];
+    return warnings.map(function(w){
+      var level = (w.level || '').toLowerCase();
+      return {
+        severity: level,
+        color: { code: level },
+        headline: w.title || w.typeName || '天气预警',
+        description: w.text || '',
+        instruction: '',
+        criteria: '',
+        issuedTime: w.pubTime || '',
+        expireTime: w.endTime || '',
+        senderName: w.sender || '',
+        eventType: { name: w.typeName || '' },
+        messageType: { code: (w.status === 'cancel' ? 'cancel' : '') }
+      };
+    });
+  }
+
   function loadAlerts() {
-    var host = QW_BASE.replace(/\/v7$/, '');
-    var url = host + '/weatheralert/v1/current/' + currentLocation.lat + '/' + currentLocation.lng + '?key=' + QW_KEY;
+    var loc = currentLocation.lng + ',' + currentLocation.lat;
+    var url = QW_BASE + '/warning/now?location=' + loc + '&key=' + QW_KEY + '&lang=zh';
     fetch(url).then(function(r){return r.json()}).then(function(data){
-      if(data.alerts && data.alerts.length > 0){
-        // Filter by current province, then save & render
-        var filtered = filterAlertsByLocation(data.alerts);
+      // Handle API-level errors (403, etc.)
+      if(data.code && data.code !== '200') {
+        console.warn('[预警] API返回错误 code=' + data.code);
+        var cached = getCachedAlerts();
+        if(cached && cached.alerts.length > 0) {
+          var filteredCache = filterAlertsByLocation(cached.alerts);
+          renderAlerts(filteredCache, cached._ageHours);
+        } else {
+          renderAlerts([], null);
+        }
+        return;
+      }
+      // Normalize warning data to internal format
+      var alerts = normalizeWarnings(data.warning || []);
+      if(alerts.length > 0){
+        var filtered = filterAlertsByLocation(alerts);
         if(filtered.length > 0) {
           saveAlertsToCache(filtered);
           renderAlerts(filtered, null);
@@ -1439,7 +1473,8 @@
       } else {
         renderAlerts([], null);
       }
-    }).catch(function(){
+    }).catch(function(err){
+      console.warn('[预警] 网络请求失败:', err);
       // Network error — fallback to cache (with filter)
       var cached = getCachedAlerts();
       if(cached && cached.alerts.length > 0) {
