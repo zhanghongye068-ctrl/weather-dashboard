@@ -23,7 +23,7 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
-      margin: 0; padding: 0;
+      margin: 0; padding: 0; max-width: 100vw; box-sizing: border-box;
     }
     /* ===== Dynamic Weather Backgrounds (V3 — MAX VISIBILITY) ===== */
     .bg-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -68,15 +68,15 @@
     .bg-cloudy .cloud--6 { width: 950px; height: 240px; top: 160px; left: 40%; background: rgba(215,215,230,0.2); animation: cloudDrift2 42s ease-in-out infinite alternate-reverse; }
 
     /* --- Partly Cloudy / 多云: sun mostly hidden behind thick clouds, grey-blue --- */
-    .bg-partlycloudy { background: linear-gradient(180deg, #2d4460 0%, #3a5570 30%, #4e6885 60%, #6380a0 100%); }
-    .bg-partlycloudy .pc-sun { position: absolute; top: 20px; right: 40px; width: 55px; height: 55px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff9c4, #ffeb3b 45%, #ffc107 75%, transparent 100%); box-shadow: 0 0 15px 5px rgba(255,235,59,0.18), 0 0 30px 10px rgba(255,215,0,0.06); opacity: 0.4; z-index: 1; filter: blur(4px); }
+    .bg-partlycloudy { background: linear-gradient(180deg, #1e3048 0%, #263b55 30%, #324b68 60%, #3d5878 100%); }
+    .bg-partlycloudy .pc-sun { position: absolute; top: 20px; right: 40px; width: 55px; height: 55px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff9c4, #ffeb3b 45%, #ffc107 75%, transparent 100%); box-shadow: 0 0 15px 5px rgba(255,235,59,0.12), 0 0 30px 10px rgba(255,215,0,0.04); opacity: 0.3; z-index: 1; filter: blur(4px); }
     .bg-partlycloudy .pc-cloud { position: absolute; border-radius: 50%; filter: blur(24px); z-index: 2; }
-    .bg-partlycloudy .pc-cloud--1 { width: 900px; height: 200px; top: -20px; left: -150px; background: rgba(200,208,222,0.55); animation: cloudDrift1 28s ease-in-out infinite alternate; }
-    .bg-partlycloudy .pc-cloud--2 { width: 850px; height: 180px; top: 40px; right: -120px; background: rgba(190,198,214,0.48); animation: cloudDrift2 35s ease-in-out infinite alternate; }
-    .bg-partlycloudy .pc-cloud--3 { width: 750px; height: 160px; top: -10px; left: 25%; background: rgba(195,204,218,0.42); animation: cloudDrift1 32s ease-in-out infinite alternate-reverse; }
-    .bg-partlycloudy .pc-cloud--4 { width: 700px; height: 150px; top: 100px; left: 8%; background: rgba(185,196,212,0.36); animation: cloudDrift2 40s ease-in-out infinite alternate; }
-    .bg-partlycloudy .pc-cloud--5 { width: 650px; height: 140px; top: 150px; right: 12%; background: rgba(178,190,208,0.32); animation: cloudDrift1 38s ease-in-out infinite alternate-reverse; }
-    .bg-partlycloudy .pc-cloud--6 { width: 800px; height: 170px; top: 60px; left: 35%; background: rgba(188,199,216,0.3); animation: cloudDrift2 42s ease-in-out infinite alternate; }
+    .bg-partlycloudy .pc-cloud--1 { width: 900px; height: 200px; top: -20px; left: -150px; background: rgba(120,130,148,0.35); animation: cloudDrift1 28s ease-in-out infinite alternate; }
+    .bg-partlycloudy .pc-cloud--2 { width: 850px; height: 180px; top: 40px; right: -120px; background: rgba(110,120,138,0.3); animation: cloudDrift2 35s ease-in-out infinite alternate; }
+    .bg-partlycloudy .pc-cloud--3 { width: 750px; height: 160px; top: -10px; left: 25%; background: rgba(115,125,142,0.28); animation: cloudDrift1 32s ease-in-out infinite alternate-reverse; }
+    .bg-partlycloudy .pc-cloud--4 { width: 700px; height: 150px; top: 100px; left: 8%; background: rgba(105,116,134,0.24); animation: cloudDrift2 40s ease-in-out infinite alternate; }
+    .bg-partlycloudy .pc-cloud--5 { width: 650px; height: 140px; top: 150px; right: 12%; background: rgba(100,112,130,0.22); animation: cloudDrift1 38s ease-in-out infinite alternate-reverse; }
+    .bg-partlycloudy .pc-cloud--6 { width: 800px; height: 170px; top: 60px; left: 35%; background: rgba(108,120,138,0.2); animation: cloudDrift2 42s ease-in-out infinite alternate; }
 
     /* --- Overcast / 阴: dark grey, no sun --- */
     .bg-overcast { background: linear-gradient(180deg, #4a4a56 0%, #3a3a46 35%, #2a2a34 70%, #1e1e26 100%); }
@@ -130,7 +130,7 @@
       background-size: 100% 4px; animation: scanLine 6s linear infinite;
     }
 
-    .dashboard { position: relative; z-index: 1; max-width: 1920px; margin: 0 auto; padding: 10px 16px 8px; }
+    .dashboard { position: relative; z-index: 1; max-width: 1920px; width: 100%; margin: 0 auto; padding: 10px 12px 8px; overflow-x: hidden; box-sizing: border-box; }
 
     /* ===== Header ===== */
     .header { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px; margin-bottom: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); backdrop-filter: blur(20px); position: relative; z-index: 9999; }
@@ -228,25 +228,25 @@
     .settings-save-btn:hover { background: linear-gradient(135deg, rgba(79,195,247,0.3), rgba(0,229,255,0.3)); }
 
     /* ===== Weather Hero Panel (NEW — no duplication) ===== */
-    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 10px 14px; backdrop-filter: blur(20px); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: nowrap; align-items: stretch; position: relative; overflow: hidden; max-height: 38vh; }
+    .weather-hero { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-card); padding: 6px; backdrop-filter: blur(20px); margin-bottom: 6px; display: grid; grid-template-columns: 3fr 2.5fr 8fr; gap: 6px; position: relative; overflow: hidden; max-height: 32vh; width: 100%; box-sizing: border-box; }
     .weather-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; background-image: linear-gradient(rgba(79,195,247,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(79,195,247,0.5) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; }
-    .weather-hero__alert-col { flex: 0 0 24%; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 12px; gap: 6px; overflow: hidden; max-height: 36vh; }
-    .weather-hero__alert-header { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .weather-hero__alert-icon { font-size: 22px; }
-    .weather-hero__alert-title { font-size: 13px; color: var(--text-secondary); writing-mode: vertical-rl; letter-spacing: 4px; font-weight: 600; }
+    .weather-hero__alert-col { min-width: 0; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border-radius: 10px; padding: 6px 8px; gap: 3px; overflow-x: hidden !important; overflow-y: auto; max-height: 30vh; }
+    .weather-hero__alert-header { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
+    .weather-hero__alert-icon { font-size: 20px; }
+    .weather-hero__alert-title { font-size: 16px; color: #ffd54f; font-weight: 800; text-shadow: 0 0 10px rgba(255,213,79,0.5); }
     .weather-hero__alert-badge { font-size: 10px; padding: 1px 8px; border-radius: 20px; background: rgba(105,240,174,0.15); color: var(--accent-green); font-weight: 600; }
     .weather-hero__alert-badge.has-alert { background: rgba(255,82,82,0.15); color: var(--accent-red); }
-    .weather-hero__alert-body { flex: 1 1 auto; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; max-height: 28vh; }
+    .weather-hero__alert-body { flex: 1 1 auto; width: 100%; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 2px; max-height: 22vh; }
     .weather-hero__alert-empty { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 11px; padding: 4px; text-align: center; }
     .weather-hero__alert-col .alert-section__empty { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px; font-size: 11px; color: var(--text-secondary); text-align: center; }
     .weather-hero__alert-col .alert-section__empty-icon { font-size: 14px; }
-    .weather-hero__alert-col .alert-card { padding: 6px 5px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .weather-hero__alert-col .alert-card { padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.04); overflow-x: hidden !important; width: 100%; box-sizing: border-box; }
     .weather-hero__alert-col .alert-card:last-child { border-bottom: none; }
-    .weather-hero__alert-col .alert-card__top { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .weather-hero__alert-col .alert-card__severity { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-    .weather-hero__alert-col .alert-card__headline { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; word-break: break-all; }
-    .weather-hero__alert-col .alert-card__time { font-size: 10px; color: var(--accent-cyan); text-align: center; margin-top: 2px; }
-    .weather-hero__alert-col .alert-card__desc { font-size: 10px; color: var(--text-secondary); line-height: 1.5; margin-top: 3px; max-height: 72px; overflow-y: auto; }
+    .weather-hero__alert-col .alert-card__top { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; box-sizing: border-box; }
+    .weather-hero__alert-col .alert-card__severity { padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+    .weather-hero__alert-col .alert-card__headline { font-size: 10px; font-weight: 600; color: var(--text-primary); text-align: center; line-height: 1.3; word-break: break-word; overflow-wrap: break-word; max-width: 100%; overflow-x: hidden; }
+    .weather-hero__alert-col .alert-card__time { font-size: 9px; color: var(--accent-cyan); text-align: center; margin-top: 2px; white-space: normal; word-break: break-all; overflow-x: hidden; }
+    .weather-hero__alert-col .alert-card__desc { font-size: 9px; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; max-height: 54px; max-width: 100%; overflow-y: auto; overflow-x: hidden !important; word-break: break-word; overflow-wrap: break-word; box-sizing: border-box; }
     .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar { width: 2px; }
     .weather-hero__alert-col .alert-card__desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 1px; }
     .weather-hero__alert-col .alert-card__criteria { font-size: 9px; color: rgba(232,234,246,0.4); line-height: 1.4; margin-top: 2px; }
@@ -254,21 +254,21 @@
     .weather-hero__alert-col .alert-card__instruction { font-size: 10px; margin-top: 4px; padding: 4px 6px; }
     .alert-cache-hint { font-size: 10px; color: var(--accent-yellow); text-align: center; padding: 2px 4px; margin-bottom: 2px; background: rgba(255,215,64,0.08); border-radius: 4px; }
     .weather-hero__alert-col .alert-cache-hint { font-size: 9px; }
-    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; max-height: 36vh; overflow: hidden; }
-    .weather-hero__location { font-size: 13px; color: var(--text-secondary); margin-bottom: 2px; }
-    .weather-hero__desc { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
-    .weather-hero__temp { font-size: 68px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff6b35, #ff1744); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 12px rgba(255,107,53,0.25)); }
-    .weather-hero__hl { display: flex; gap: 10px; margin-top: 4px; font-size: 13px; color: var(--text-secondary); }
+    .weather-hero__main { min-width: 0; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 2px; max-height: 30vh; overflow: hidden; border-radius: 10px; border: 1px solid transparent; }
+    .weather-hero__location { font-size: 11px; color: var(--text-secondary); margin-bottom: 1px; }
+    .weather-hero__desc { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+    .weather-hero__temp { font-size: 52px; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff6b35, #ff1744); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 12px rgba(255,107,53,0.25)); }
+    .weather-hero__hl { display: flex; gap: 8px; margin-top: 2px; font-size: 11px; color: var(--text-secondary); }
     .weather-hero__hl span { color: var(--accent-orange); font-weight: 600; }
     .weather-hero__hl .hl-low { color: var(--accent-blue); }
-    .weather-hero__feel { margin-top: 3px; font-size: 13px; display: flex; align-items: center; gap: 5px; color: var(--text-secondary); }
-    .weather-hero__feel-icon { font-size: 17px; }
+    .weather-hero__feel { margin-top: 2px; font-size: 11px; display: flex; align-items: center; gap: 4px; color: var(--text-secondary); }
+    .weather-hero__feel-icon { font-size: 14px; }
 
-    .weather-hero__grid { flex: 0 0 52%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 36vh; overflow: hidden; }
-    .weather-hero__cell { background: rgba(255,255,255,0.14); border-radius: 8px; padding: 8px 12px; text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.1); transition: all .3s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; }
+    .weather-hero__grid { min-width: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; max-height: 30vh; overflow: hidden; }
+    .weather-hero__cell { background: rgba(255,255,255,0.14); border-radius: 8px; padding: 5px 6px; text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.1); transition: all .3s; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 3px; }
     .weather-hero__cell:hover { border-color: rgba(79,195,247,0.3); box-shadow: 0 0 24px rgba(79,195,247,0.1); }
-    .weather-hero__cell-label { font-size: 14px; color: var(--text-secondary); letter-spacing: .3px; white-space: nowrap; }
-    .weather-hero__cell-value { font-size: 19px; font-weight: 700; text-shadow: 0 0 8px rgba(0,0,0,0.3); }
+    .weather-hero__cell-label { font-size: 12px; color: var(--text-secondary); letter-spacing: .3px; white-space: nowrap; }
+    .weather-hero__cell-value { font-size: 16px; font-weight: 700; text-shadow: 0 0 8px rgba(0,0,0,0.3); }
     .hero-c--temp { color: var(--accent-orange); }
     .hero-c--hum { color: var(--accent-blue); }
     .hero-c--wind { color: var(--accent-green); }
@@ -290,11 +290,12 @@
     .weather-hero__cell.alert-high .weather-hero__cell-value::after { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
     .weather-hero__cell.alert-low  .weather-hero__cell-value::after { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
     /* --- Alert on main temp column --- */
-    .weather-hero__main { flex: 0 0 24%; display: flex; flex-direction: column; justify-content: center; position: relative; transition: all .3s; padding: 6px; border-radius: 10px; border: 1px solid transparent; }
     .weather-hero__main.alert-high { border: 2px solid rgba(255,82,82,0.55); box-shadow: 0 0 24px rgba(255,82,82,0.2); }
     .weather-hero__main.alert-low  { border: 2px solid rgba(79,195,247,0.55); box-shadow: 0 0 24px rgba(79,195,247,0.2); }
     /* Temperature blink when alerted */
     .weather-hero__main.alert-high .weather-hero__temp { animation: tempBlinkHigh 1.2s ease-in-out infinite; }
+    .weather-hero__alert-col.has-alert-border { border: 2px solid rgba(255,82,82,0.55) !important; box-shadow: 0 0 24px rgba(255,82,82,0.2); }
+    .weather-hero__alert-col.has-alert-border .weather-hero__alert-title { color: #ff5252; text-shadow: 0 0 10px rgba(255,82,82,0.6); }
     .weather-hero__main.alert-low  .weather-hero__temp { animation: tempBlinkLow 1.2s ease-in-out infinite; }
     @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes tempBlinkHigh { 0%,100%{filter:drop-shadow(0 0 12px rgba(255,82,82,0.3));} 50%{filter:drop-shadow(0 0 32px rgba(255,82,82,0.7));} }
@@ -477,7 +478,7 @@
   <div class="dashboard">
     <!-- Header -->
     <header class="header">
-      <div class="header__brand">🌤 <span>海润智慧运维气象监测站</span><span class="header__version"> v2026.05.25</span></div>
+      <div class="header__brand">🌤 <span>海润智慧运维气象监测站</span></div>
       <div class="header__right">
         <div class="city-selector" id="citySelector">
           <button class="city-selector__btn" id="cityBtn"><span id="cityBtnLabel">北京 朝阳区</span></button>
@@ -545,7 +546,7 @@
       <div class="weather-hero__alert-col" id="alertSection">
         <div class="weather-hero__alert-header">
           <span class="weather-hero__alert-icon">🛡️</span>
-          <span class="weather-hero__alert-title">预警</span>
+          <span class="weather-hero__alert-title" id="alertTitle">预警</span>
           <span class="weather-hero__alert-badge" id="alertBadge">无预警</span>
         </div>
         <div class="weather-hero__alert-body" id="alertBody">
@@ -1437,18 +1438,26 @@
   function renderAlerts(alerts, ageHours) {
     var $body=document.getElementById('alertBody');
     var $badge=document.getElementById('alertBadge');
+    var $section=document.getElementById('alertSection');
     var newCount = 0;
     var isCached = (ageHours != null);
 
+    var $title = document.getElementById('alertTitle');
     if(!alerts || alerts.length === 0){
       newCount = 0;
       $body.innerHTML='<div class="alert-section__empty"><span class="alert-section__empty-icon">✅</span><span>当前暂无气象预警信息</span></div>';
       $badge.textContent='无预警';
       $badge.className='weather-hero__alert-badge';
+      $section.classList.remove('has-alert-border');
+      $title.style.color = '#ffd54f';
+      $title.style.textShadow = '0 0 10px rgba(255,213,79,0.5)';
     } else {
       newCount = alerts.length;
       $badge.textContent = newCount + '条' + (isCached ? '·缓存' : '');
       $badge.className='weather-hero__alert-badge has-alert';
+      $section.classList.add('has-alert-border');
+      $title.style.color = '';
+      $title.style.textShadow = '';
       var html='';
       if(isCached) {
         html+='<div class="alert-cache-hint">⏱ 数据缓存 ' + ageHours + ' 小时前，等待刷新</div>';
@@ -1462,8 +1471,8 @@
         var instruction = a.instruction || '';
         if(instruction.length > 800) instruction = instruction.substring(0,800)+'…';
         var criteria = a.criteria || '';
-        var timeInfo = a.issuedTime ? ('发布时间: ' + a.issuedTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
-        var expireInfo = a.expireTime ? (' · 失效: ' + a.expireTime.replace(/T/,' ').replace(/\+.*$/,'')) : '';
+        var timeInfo = a.issuedTime ? ('发布: ' + a.issuedTime.replace(/^\d{4}-/,'').replace(/T/,' ').replace(/:00\+.*$/,'').replace(/:\d{2}$/,'')) : '';
+        var expireInfo = a.expireTime ? ('失效: ' + a.expireTime.replace(/^\d{4}-/,'').replace(/T/,' ').replace(/:00\+.*$/,'').replace(/:\d{2}$/,'')) : '';
         var areaInfo = a.senderName || '';
         var isCancel = a.messageType && a.messageType.code === 'cancel';
 
@@ -1472,7 +1481,10 @@
         html+='<span class="alert-card__severity alert-card__severity--'+lv.color+'">'+lv.icon+' '+lv.label+(isCancel?' 已解除':'')+'</span>';
         html+='<span class="alert-card__headline">'+escHtml(headline)+'</span>';
         html+='</div>';
-        if(timeInfo) html+='<div class="alert-card__time">'+escHtml(timeInfo)+escHtml(expireInfo)+'</div>';
+        if(timeInfo || expireInfo) {
+          var timeStr = (timeInfo && expireInfo) ? (timeInfo + ' · ' + expireInfo) : (timeInfo + expireInfo);
+          html+='<div class="alert-card__time">'+escHtml(timeStr)+'</div>';
+        }
         if(desc) html+='<div class="alert-card__desc">'+escHtml(desc)+'</div>';
         if(criteria) html+='<div class="alert-card__criteria">ℹ '+escHtml(criteria)+'</div>';
         if(areaInfo) html+='<div class="alert-card__meta">📍 '+escHtml(areaInfo)+'</div>';
